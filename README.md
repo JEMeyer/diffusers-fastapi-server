@@ -1,4 +1,4 @@
-# Stable Diffusion FastAPI Multi-GPU Server
+# Stable Diffusion FastAPI Server
 
 This project is a web server that provides a FastAPI-based interface for generating images using Stable Diffusion models. It supports both text-to-image (`/txt2img`) and image-to-image (`/img2img`) generation endpoints. The server is designed to only run on 1 gpu, if multiple are needed, use ai-maestro-router in conjunction with multiple `stablediffusion-fastapi-server` instances
 
