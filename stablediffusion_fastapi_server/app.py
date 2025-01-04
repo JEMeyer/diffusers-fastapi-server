@@ -139,7 +139,7 @@ async def upload_image(file: UploadFile = File(...)):
     Returns a file_id (UUID) so we can retrieve the image tensor later.
     """
     try:
-        file_id = str(uuid4())
+        file_id = str("diffusor_data:", uuid4())
 
         # Read entire file content
         file_content = await file.read()
@@ -182,7 +182,7 @@ async def img2img(input_data: Img2ImgInput):
     - Streams back the result as PNG
     """
     # Retrieve tensor data from Redis
-    tensor_data = redis_client.get(f"{input_data.file_id}_tensor")
+    tensor_data = redis_client.get(f"diffusor_data:{input_data.file_id}_tensor")
     if not tensor_data:
         raise HTTPException(status_code=404, detail="File not found")
 
