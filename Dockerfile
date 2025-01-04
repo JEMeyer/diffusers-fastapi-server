@@ -2,7 +2,7 @@
 FROM --platform=$BUILDPLATFORM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime AS amd64_base
 
 # Base image for arm64 with Python 3.10 slim
-FROM --platform=$BUILDPLATFORM arm64v8/python:3.10-slim AS arm64_base
+FROM --platform=$BUILDPLATFORM python:3.10-slim AS arm64_base
 
 # Select the appropriate base image based on the platform
 FROM amd64_base AS base
