@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
-# Install dependencies
-RUN apt-get update && apt-get install -y python3 python3-pip
+# Install additional dependencies if required
+RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
@@ -9,8 +9,8 @@ WORKDIR /app
 # Copy the current project folder to /app
 COPY . .
 
-# Install the diffusors_fastapi_server package
-RUN pip3 install .
+# Install the diffusors_fastapi_server package and its dependencies
+RUN pip3 install . --no-cache-dir
 
 # Export the port
 EXPOSE 8000
