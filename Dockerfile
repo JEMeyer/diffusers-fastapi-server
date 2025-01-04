@@ -10,7 +10,7 @@ WORKDIR /app
 COPY . .
 
 # Install the diffusors_fastapi_server package and its dependencies
-RUN pip3 install . --no-cache-dir
+RUN pip3 install .
 
 # Export the port
 EXPOSE 8000
