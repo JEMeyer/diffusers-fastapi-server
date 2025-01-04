@@ -33,4 +33,4 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/stablediffusion-fastapi-server:latest
+            ghcr.io/${{ env.OWNER_LC }}/diffusors-fastapi-server:latest

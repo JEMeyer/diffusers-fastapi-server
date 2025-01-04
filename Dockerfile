@@ -9,11 +9,11 @@ WORKDIR /app
 # Copy the current project folder to /app
 COPY . .
 
-# Install the stablediffusion_fastapi_server package
+# Install the diffusors_fastapi_server package
 RUN pip3 install .
 
 # Export the port
 EXPOSE 8000
 
 # Run the server
-CMD ["uvicorn", "stablediffusion_fastapi_server.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "diffusors_fastapi_server.app:app", "--host", "0.0.0.0", "--port", "8000"]
