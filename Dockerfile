@@ -1,18 +1,33 @@
-FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
-# Install additional dependencies if required
-RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+# Set environment variables for non-interactive installs and Python
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
 
-# Set the working directory
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3.10 python3.10-venv python3.10-dev python3-pip \
+    build-essential git wget curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install Python dependencies
+RUN python3.10 -m pip install --upgrade pip setuptools wheel
+
+# Copy your application code to the container
 WORKDIR /app
+COPY . /app
 
-# Copy the current project folder to /app
-COPY . .
+# Install Python dependencies from setup.py
+RUN pip install .
 
-# Install the diffusors_fastapi_server package and its dependencies
-RUN pip3 install .
+# Ensure the NVIDIA runtime is set up correctly
+RUN pip install nvidia-pyindex && pip install nvidia-torch==2.0.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
 
-# Export the port
+# Expose the port used by the server
 EXPOSE 8000
 
 # Run the server
