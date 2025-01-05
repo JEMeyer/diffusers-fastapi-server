@@ -147,6 +147,19 @@ async def log_duration(request: Request, call_next):
 # ----------------------
 #      ENDPOINTS
 # ----------------------
+async def stream_image(image: Image.Image):
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    img_byte_arr.seek(0)
+    chunk_size = 1024  # 1KB chunks
+
+    while True:
+        data = img_byte_arr.read(chunk_size)
+        if not data:
+            break
+        yield data
+
+
 @app.post("/txt2img")
 async def txt2img(input_data: Txt2ImgInput):
     if not ENABLE_TXT2IMG or txt2img_pipeline is None:
@@ -165,13 +178,11 @@ async def txt2img(input_data: Txt2ImgInput):
                     )
                     image = result.images[0]
 
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        img_byte_arr.seek(0)
-
-        filename = f"{uuid4()}.png"
-        headers = {"Content-Disposition": f"attachment; filename={filename}"}
-        return StreamingResponse(img_byte_arr, media_type="image/png", headers=headers)
+        return StreamingResponse(
+            stream_image(image),
+            media_type="image/png",
+            headers={"Content-Disposition": f"attachment; filename={uuid4()}.png"},
+        )
 
     except Exception as e:
         logger.error(f"Error in txt2img: {e}", exc_info=True)
@@ -220,13 +231,11 @@ async def img2img(input_data: Img2ImgInput):
                     )
                     image = result.images[0]
 
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        img_byte_arr.seek(0)
-
-        filename = f"{uuid4()}.png"
-        headers = {"Content-Disposition": f"attachment; filename={filename}"}
-        return StreamingResponse(img_byte_arr, media_type="image/png", headers=headers)
+        return StreamingResponse(
+            stream_image(image),
+            media_type="image/png",
+            headers={"Content-Disposition": f"attachment; filename={uuid4()}.png"},
+        )
     except Exception as e:
         logger.error(f"Error in img2img: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
