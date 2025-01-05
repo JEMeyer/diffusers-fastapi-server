@@ -13,6 +13,10 @@ from PIL import Image
 import torch
 from torch import autocast
 from diffusers import AutoPipelineForText2Image, AutoPipelineForImage2Image
+from transformers.utils import move_cache
+
+# Migrate cache as suggested by the error message
+move_cache()
 
 # Optional: Initialize Sentry if using
 # import sentry_sdk
@@ -88,7 +92,7 @@ async def load_models():
     try:
         if ENABLE_TXT2IMG or ENABLE_IMG2IMG:
             base_pipeline = AutoPipelineForText2Image.from_pretrained(
-                MODEL_NAME, torch_dtype=torch.float16, variant="fp16"
+                MODEL_NAME, torch_dtype=torch.float16
             ).to(device)
             logger.info(f"Base pipeline for {MODEL_NAME} loaded.")
 
@@ -100,7 +104,6 @@ async def load_models():
             img2img_pipeline = AutoPipelineForImage2Image.from_pretrained(
                 MODEL_NAME,
                 torch_dtype=torch.float16,
-                variant="fp16",
                 vae=base_pipeline.vae,
                 text_encoder=base_pipeline.text_encoder,
                 tokenizer=base_pipeline.tokenizer,
