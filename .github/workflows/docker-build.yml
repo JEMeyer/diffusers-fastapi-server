@@ -48,4 +48,4 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/diffusors-fastapi-server:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/diffusers-fastapi-server:latest

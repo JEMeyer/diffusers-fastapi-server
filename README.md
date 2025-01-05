@@ -1,6 +1,6 @@
-# Diffusors FastAPI Server
+# Diffusers FastAPI Server
 
-This project is a web server that provides a FastAPI-based interface for generating images using Diffusors models. It supports both text-to-image (`/txt2img`) and image-to-image (`/img2img`) generation endpoints. The server is designed to only run on 1 gpu, if multiple are needed, use ai-maestro-router in conjunction with multiple `diffusors-fastapi-server` instances
+This project is a web server that provides a FastAPI-based interface for generating images using Diffusers models. It supports both text-to-image (`/txt2img`) and image-to-image (`/img2img`) generation endpoints. The server is designed to only run on 1 gpu, if multiple are needed, use ai-maestro-router in conjunction with multiple `diffusers-fastapi-server` instances
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ Ports and gpus are configured with standard docker flags.
 To use the most recent stable image, pull the `latest` tag:
 
 ```bash
-docker run -e MODEL_NAME=stabilityai/sdxl-turbo  -p 8000:8000 ghcr.io/jemeyer/diffusors-fastapi-server:latest
+docker run -e MODEL_NAME=stabilityai/sdxl-turbo  -p 8000:8000 ghcr.io/jemeyer/diffusers-fastapi-server:latest
 ```
 
 This will start the server and make it accessible at <http://localhost:8000>.
@@ -33,31 +33,31 @@ If you have an NVIDIA GPU and want to use it with the UI, you can pass the --gpu
 - To use all available GPUs (only 1 - if multiple are needed, use ai-maestro-router):
 
 ```bash
-docker run --gpus all -e MODEL_NAME=stabilityai/sdxl-turbo -p 8000:8000 ghcr.io/jemeyer/diffusors-fastapi-server:latest
+docker run --gpus all -e MODEL_NAME=stabilityai/sdxl-turbo -p 8000:8000 ghcr.io/jemeyer/diffusers-fastapi-server:latest
 ```
 
 - To use a specific number of GPUs:
 
 ```bash
-docker run --gpus 1 -e MODEL_NAME=stabilityai/sdxl-turbo -p 8000:8000 ghcr.io/jemeyer/diffusors-fastapi-server:latest
+docker run --gpus 1 -e MODEL_NAME=stabilityai/sdxl-turbo -p 8000:8000 ghcr.io/jemeyer/diffusers-fastapi-server:latest
 ```
 
 - To use a specific GPU by its device ID (e.g., GPU 2), and define a different model_name:
 
 ```bash
-docker run --gpus -e MODEL_NAME=stabilityai/sd-turbo device=2 -p 8000:8000 ghcr.io/jemeyer/diffusors-fastapi-server:latest
+docker run --gpus -e MODEL_NAME=stabilityai/sd-turbo device=2 -p 8000:8000 ghcr.io/jemeyer/diffusers-fastapi-server:latest
 ```
 
 Note that you need to have the NVIDIA Container Toolkit installed on your host for GPU passthrough to work.
 
 ### Docker Compose
 
-You can also use Diffusors Fastapi Server with Docker Compose. Here's an example docker-compose.yml file:
+You can also use Diffusers Fastapi Server with Docker Compose. Here's an example docker-compose.yml file:
 
 ```yaml
 services:
-  diffusors-fastapi-server:
-    image: ghcr.io/jemeyer/diffusors-fastapi-server:latest
+  diffusers-fastapi-server:
+    image: ghcr.io/jemeyer/diffusers-fastapi-server:latest
     ports:
       - 8000:8000
     environment:
@@ -119,15 +119,15 @@ Below you will find a comparison table that outlines the specifications of vario
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/jemeyer/diffusors-fastapi-server.git
-   cd diffusors-fastapi-server
+   git clone https://github.com/jemeyer/diffusers-fastapi-server.git
+   cd diffusers-fastapi-server
    ```
 
 2. Set up a virtual environment using `pyenv`:
 
    ```bash
-   pyenv virtualenv 3.10.13 diffusors-fastapi-server
-   pyenv local diffusors-fastapi-server
+   pyenv virtualenv 3.10.13 diffusers-fastapi-server
+   pyenv local diffusers-fastapi-server
    ```
 
 3. Install the required dependencies:
@@ -146,13 +146,13 @@ The server can be dockerized for easy deployment and scalability. A Dockerfile i
 To build the Docker image, run the following command:
 
 ```bash
-docker build -t jemeyer/diffusors-fastapi-server .
+docker build -t jemeyer/diffusers-fastapi-server .
 ```
 
 To run the Docker container, use the following command:
 
 ```bash
-docker run -p 8000:8000 jemeyer/diffusors-fastapi-server
+docker run -p 8000:8000 jemeyer/diffusers-fastapi-server
 ```
 
 The server will be accessible at `http://localhost:8000`.
