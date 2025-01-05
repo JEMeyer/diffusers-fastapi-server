@@ -15,14 +15,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Create and activate Python virtual environment
 RUN python3.10 -m venv /opt/venv
-RUN /opt/venv/bin/pip install --upgrade pip
+RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 
 # Set working directory
 WORKDIR /app
 
+# Install PyTorch separately with CUDA 12.1
+# Ensure 'torch' is **not** listed in requirements.txt to avoid duplication
+RUN /opt/venv/bin/pip install torch==2.0.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
+
 # Copy and install Python dependencies
 COPY requirements.txt .
-RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN /opt/venv/bin/pip install --upgrade --no-cache-dir -r requirements.txt
+
+# Save the updated requirements to a file for logging/reference
+RUN /opt/venv/bin/pip freeze > updated_requirements.txt
 
 # Copy application code
 COPY app.py .
