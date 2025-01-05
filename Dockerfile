@@ -21,7 +21,6 @@ RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 WORKDIR /app
 
 # Install PyTorch with CUDA 12.1 separately
-# Updated to a valid torch version with +cu121
 RUN /opt/venv/bin/pip install torch==2.1.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
 
 # Copy and install Python dependencies
