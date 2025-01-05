@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+diffusers
+transformers
+torch
+Pillow
+xformers

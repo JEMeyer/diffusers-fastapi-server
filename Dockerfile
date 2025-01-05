@@ -1,5 +1,5 @@
-# Base image with CUDA support
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS base
+# Base image with CUDA runtime and Python 3.10
+FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
 # Set environment variables for non-interactive installs and Python
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -9,32 +9,28 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
     PATH="/opt/venv/bin:$PATH"
 
-# Install minimal dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.10 python3.10-venv python3-pip \
-    wget curl \
+    build-essential git curl libgl1-mesa-glx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Create and activate a Python virtual environment
-RUN python3.10 -m venv /opt/venv && \
-    /opt/venv/bin/pip install --upgrade pip setuptools wheel
-
-# Application stage
-FROM base AS app
+RUN python3.10 -m venv /opt/venv
+RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 
 # Set working directory
 WORKDIR /app
 
-# Copy application files
+# Copy your application code
 COPY . /app
 
-# Install application dependencies
-RUN pip install . \
-    && pip install nvidia-pyindex nvidia-torch==2.0.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port used by the server
+# Expose the port used by FastAPI
 EXPOSE 8000
 
-# Command to run the server
-CMD ["uvicorn", "diffusors_fastapi_server.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command to run FastAPI
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
