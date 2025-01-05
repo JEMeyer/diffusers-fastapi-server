@@ -20,9 +20,9 @@ RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 # Set working directory
 WORKDIR /app
 
-# Install PyTorch separately with CUDA 12.1
-# Ensure 'torch' is **not** listed in requirements.txt to avoid duplication
-RUN /opt/venv/bin/pip install torch==2.0.1+cu121 torchvision --extra-index-url https://download.pytorch.org/whl/cu121
+# Install PyTorch with CUDA 12.1 separately
+# Ensure 'torch' is removed from requirements.txt to avoid duplication
+RUN /opt/venv/bin/pip install torch==2.1.0+cu121 torchvision==0.15.2+cu121 torchaudio==2.0.2+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
 
 # Copy and install Python dependencies
 COPY requirements.txt .
