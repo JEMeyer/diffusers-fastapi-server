@@ -1,5 +1,5 @@
-# Use the official PyTorch image with CUDA 12.1
-FROM pytorch/pytorch:2.1.1-cuda12.1-cudnn8-runtime
+# Use the official PyTorch image with CUDA 12.4
+FROM --platform=linux/amd64 pytorch/pytorch:2.5.1-cuda12.4-cudnn8-runtime
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
