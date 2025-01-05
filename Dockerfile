@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Install PyTorch separately with CUDA 12.1
 # Ensure 'torch' is **not** listed in requirements.txt to avoid duplication
-RUN /opt/venv/bin/pip install torch==2.0.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
+RUN /opt/venv/bin/pip install torch==2.0.1+cu121 torchvision --extra-index-url https://download.pytorch.org/whl/cu121
 
 # Copy and install Python dependencies
 COPY requirements.txt .
