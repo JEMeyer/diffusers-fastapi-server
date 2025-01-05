@@ -24,9 +24,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Save the updated requirements to a file for logging/reference
-RUN /opt/venv/bin/pip freeze > updated_requirements.txt
-
 # Copy application code
 COPY app.py .
 
