@@ -1,5 +1,5 @@
-# Use NVIDIA's CUDA runtime with Ubuntu
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+# Use NVIDIA's CUDA runtime with Ubuntu for linux/amd64 architecture
+FROM --platform=linux/amd64 nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -21,12 +21,12 @@ RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
 WORKDIR /app
 
 # Install PyTorch with CUDA 12.1 separately
-# Using a valid torch version with +cu121
-RUN /opt/venv/bin/pip install torch==2.1.0+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
+# Updated to a valid torch version with +cu121
+RUN /opt/venv/bin/pip install torch==2.1.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
 
 # Copy and install Python dependencies
 COPY requirements.txt .
-RUN /opt/venv/bin/pip install --upgrade --no-cache-dir -r requirements.txt
+RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Save the updated requirements to a file for logging/reference
 RUN /opt/venv/bin/pip freeze > updated_requirements.txt
