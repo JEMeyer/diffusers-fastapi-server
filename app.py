@@ -31,7 +31,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI("/diffusion")
+app = FastAPI()
 
 # Optional: Add Sentry middleware
 # app.add_middleware(SentryAsgiMiddleware)
