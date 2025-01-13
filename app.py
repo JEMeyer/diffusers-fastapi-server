@@ -14,6 +14,7 @@ import torch
 from torch import autocast
 from diffusers import AutoPipelineForText2Image, AutoPipelineForImage2Image
 from transformers.utils import move_cache
+import base64
 
 # Migrate cache as suggested by the error message
 move_cache()
@@ -135,6 +136,13 @@ class Img2ImgInput(BaseModel):
     guidance_scale: float = 7.5
 
 
+class ImageGenerationRequest(BaseModel):
+    prompt: str
+    n: int = 1
+    size: str = "512x512"
+    response_format: str = "url"
+
+
 # ----------------------
 #     MIDDLEWARE
 # ----------------------
@@ -148,7 +156,7 @@ async def log_duration(request: Request, call_next):
 
 
 # ----------------------
-#      ENDPOINTS
+#       HELPERS
 # ----------------------
 async def stream_image(image: Image.Image):
     img_byte_arr = BytesIO()
@@ -161,6 +169,26 @@ async def stream_image(image: Image.Image):
         if not data:
             break
         yield data
+
+
+async def save_image_and_get_url(image: Image.Image, file_id: str) -> str:
+    output_dir = Path("output_images")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    file_path = output_dir / f"{file_id}.png"
+    image.save(file_path)
+    return f"/output_images/{file_id}.png"
+
+
+async def encode_image_to_base64(image: Image.Image) -> str:
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    img_byte_arr.seek(0)
+    return base64.b64encode(img_byte_arr.getvalue()).decode("utf-8")
+
+
+# ----------------------
+#      ENDPOINTS
+# ----------------------
 
 
 @app.post("/txt2img")
@@ -242,6 +270,53 @@ async def img2img(input_data: Img2ImgInput):
     except Exception as e:
         logger.error(f"Error in img2img: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/images/generations")
+async def generate_images(request: ImageGenerationRequest):
+    if not ENABLE_TXT2IMG or txt2img_pipeline is None:
+        raise HTTPException(
+            status_code=503, detail="Text-to-Image generation is unavailable."
+        )
+
+    try:
+        async with asyncio.Lock():
+            with autocast(device.type):
+                output = txt2img_pipeline(
+                    prompt=request.prompt,
+                    num_inference_steps=30,  # Default steps; can adjust as needed TODO FEATURE FLAG
+                    guidance_scale=7.5,  # Default guidance scale; can adjust as needed
+                    num_images_per_prompt=request.n,
+                )
+                images = output.images
+
+        id = str(uuid4())
+
+        if request.response_format == "url":
+            responses = [
+                {
+                    "id": id,
+                    "object": "image",
+                    "created": int(time.time()),
+                    "url": await save_image_and_get_url(image, id),
+                }
+                for image in images
+            ]
+        else:
+            responses = [
+                {
+                    "id": id,
+                    "object": "image",
+                    "created": int(time.time()),
+                    "b64_json": await encode_image_to_base64(image),
+                }
+                for image in images
+            ]
+
+        return {"data": responses}
+    except Exception as e:
+        logger.error(f"Error generating images: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
 
 @app.get("/health")
