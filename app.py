@@ -15,17 +15,16 @@ from torch import autocast
 from diffusers import AutoPipelineForText2Image, AutoPipelineForImage2Image
 from transformers.utils import move_cache
 import base64
+import sentry_sdk
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # Migrate cache as suggested by the error message
 move_cache()
 
-# Optional: Initialize Sentry if using
-# import sentry_sdk
-# from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-# sentry_sdk.init(
-#     dsn=os.environ.get("SENTRY_DSN"),
-#     traces_sample_rate=1.0
-# )
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=1.0, profiles_sample_rate=1.0
+)
 
 logging.basicConfig(
     level=logging.INFO if os.environ.get("ENV") != "production" else logging.WARNING
@@ -34,8 +33,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Optional: Add Sentry middleware
-# app.add_middleware(SentryAsgiMiddleware)
+app.add_middleware(SentryAsgiMiddleware)
 
 
 # ----------------------
@@ -331,9 +329,7 @@ async def health_check():
 
 
 # ----------------------
-#   METRICS ENDPOINT (Optional)
+#   METRICS ENDPOINT
 # ----------------------
-# from prometheus_fastapi_instrumentator import Instrumentator
-
 # Initialize Prometheus Instrumentator
-# Instrumentator().instrument(app).expose(app)
+Instrumentator().instrument(app).expose(app)

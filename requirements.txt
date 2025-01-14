@@ -6,3 +6,5 @@ python-multipart==0.0.20
 transformers==4.47.1
 uvicorn[standard]==0.34.0
 xformers==0.0.29.post1
+sentry-sdk==2.19.2
+prometheus_fastapi_instrumentator==7.0.0
