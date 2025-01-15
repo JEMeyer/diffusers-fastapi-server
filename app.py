@@ -122,12 +122,14 @@ async def load_models():
 # ----------------------
 class Txt2ImgInput(BaseModel):
     prompt: str
+    negative_prompt: str = ""
     num_inference_steps: int = 4
     guidance_scale: float = 7.5
 
 
 class Img2ImgInput(BaseModel):
     prompt: str
+    negative_prompt: str = ""
     file_id: str
     num_inference_steps: int = 4
     strength: float = 0.5
@@ -202,6 +204,7 @@ async def txt2img(input_data: Txt2ImgInput):
                 with torch.no_grad():
                     result = txt2img_pipeline(
                         prompt=input_data.prompt,
+                        negative_prompt=input_data.negative_prompt,
                         num_inference_steps=input_data.num_inference_steps,
                         guidance_scale=input_data.guidance_scale,
                     )
@@ -253,6 +256,7 @@ async def img2img(input_data: Img2ImgInput):
                 with torch.no_grad():
                     result = img2img_pipeline(
                         prompt=input_data.prompt,
+                        negative_prompt=input_data.negative_prompt,
                         image=pil_image,
                         num_inference_steps=input_data.num_inference_steps,
                         strength=input_data.strength,
